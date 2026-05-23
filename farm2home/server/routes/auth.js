@@ -55,7 +55,10 @@ router.post('/login', async (req, res) => {
 
     // Transport must have verified licence
     if (role === 'transport' && !user.licenceVerified) {
-      return res.status(403).json({ message: 'Your licence is pending verification' });
+      return res.status(403).json({ message: 'Your licence is pending verification',
+        needsLicence: !user.licenceUrl,
+    pendingVerification: !!user.licenceUrl
+      });
     }
 
     // Check password

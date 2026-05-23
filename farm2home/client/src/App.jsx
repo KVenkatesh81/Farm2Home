@@ -7,6 +7,8 @@ import AddProduct from './pages/farmer/AddProduct'
 import EditProduct from './pages/farmer/EditProduct'
 import FarmerAbout from './pages/farmer/About'
 import TransportDashboard from './pages/transport/Dashboard'
+import LicenceUpload from './pages/transport/LicenceUpload'
+import TransportAbout from './pages/transport/About'
 import BuyerDashboard from './pages/buyer/Dashboard'
 
 const ProtectedRoute = ({ children, role }) => {
@@ -23,16 +25,18 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Farmer routes */}
+      {/* Farmer */}
       <Route path="/farmer" element={<ProtectedRoute role="farmer"><FarmerDashboard /></ProtectedRoute>}/>
       <Route path="/farmer/add" element={<ProtectedRoute role="farmer"><AddProduct /></ProtectedRoute>}/>
       <Route path="/farmer/edit/:id" element={<ProtectedRoute role="farmer"><EditProduct /></ProtectedRoute>}/>
       <Route path="/farmer/about" element={<ProtectedRoute role="farmer"><FarmerAbout /></ProtectedRoute>}/>
 
-      {/* Transport routes */}
+      {/* Transport */}
       <Route path="/transport" element={<ProtectedRoute role="transport"><TransportDashboard /></ProtectedRoute>}/>
+      <Route path="/transport/licence" element={<LicenceUpload />}/>
+      <Route path="/transport/about" element={<ProtectedRoute role="transport"><TransportAbout /></ProtectedRoute>}/>
 
-      {/* Buyer routes */}
+      {/* Buyer */}
       <Route path="/buyer" element={<ProtectedRoute role="buyer"><BuyerDashboard /></ProtectedRoute>}/>
     </Routes>
   )

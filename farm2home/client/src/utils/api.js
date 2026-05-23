@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev/',
+  baseURL: 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev',
+  withCredentials: true,
 })
 
 api.interceptors.request.use((config) => {

@@ -10,7 +10,7 @@ const upload = multer({ storage });
 // GET all products (buyers see this)
 router.get('/', async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, search } = req.query;
+    const { category, minPrice, maxPrice } = req.query;
     let filter = { available: true };
     if (category) filter.category = category;
     if (minPrice || maxPrice) {
@@ -56,8 +56,8 @@ router.post('/', authMiddleware, roleMiddleware('farmer'), upload.array('images'
     await product.save();
     res.status(201).json(product);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('PRODUCT ERROR:', err.message);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -79,7 +79,7 @@ router.put('/:id', authMiddleware, roleMiddleware('farmer'), async (req, res) =>
     await product.save();
     res.json(product);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -90,7 +90,7 @@ router.delete('/:id', authMiddleware, roleMiddleware('farmer'), async (req, res)
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json({ message: 'Product deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: err.message });
   }
 });
 

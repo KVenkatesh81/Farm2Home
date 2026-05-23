@@ -19,7 +19,19 @@ export default function Login() {
       login(res.data.user, res.data.token)
       navigate(`/${res.data.user.role}`)
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed')
+      const msg = err.response?.data?.message || 'Login failed'
+  const needsLicence = err.response?.data?.needsLicence
+  const pending = err.response?.data?.pendingVerification
+
+  if (needsLicence) {
+    // Store temp user info and redirect to licence upload
+    localStorage.setItem('tempRole', 'transport')
+    navigate('/transport/licence')
+  } else if (pending) {
+    setError('Your licence is under review. Please wait for verification.')
+  } else {
+    setError(msg)
+  }
     } finally {
       setLoading(false)
     }

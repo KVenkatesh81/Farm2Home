@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  licenceUrl: {        // ADD THIS LINE
+  type: String,
+  default: ''
+},
   licenceVerified: {
     type: Boolean,
     default: false
