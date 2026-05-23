@@ -1,0 +1,105 @@
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+
+export default function EditProduct() {
+  const { token } = useAuth()
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [form, setForm] = useState({
+    title: '', description: '', price: '', quantity: '', unit: 'kg', category: 'vegetables', available: true
+  })
+
+  useEffect(() => {
+    fetch(`/api/products/my`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        const p = data.find(p => p._id === id)
+        if (p) setForm({ title: p.title, description: p.description, price: p.price, quantity: p.quantity, unit: p.unit, category: p.category, available: p.available })
+      })
+  }, [id])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+      navigate('/farmer')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <span className="font-semibold text-green-700 text-lg">🌾 Farm 2 Home</span>
+        <Link to="/farmer" className="text-gray-500 text-sm">← Back</Link>
+      </nav>
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit product</h1>
+        {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">{error}</div>}
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col gap-4">
+          <div>
+            <label className="text-sm text-gray-600 mb-1 block">Product name</label>
+            <input value={form.title} onChange={e => setForm({...form, title: e.target.value})}
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+          </div>
+          <div>
+            <label className="text-sm text-gray-600 mb-1 block">Description</label>
+            <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
+              rows={3} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500 resize-none"/>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-600 mb-1 block">Price (₹)</label>
+              <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})}
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+            </div>
+            <div>
+              <label className="text-sm text-gray-600 mb-1 block">Quantity</label>
+              <input type="number" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})}
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-600 mb-1 block">Unit</label>
+              <select value={form.unit} onChange={e => setForm({...form, unit: e.target.value})}
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500">
+                {['kg','gram','dozen','piece','litre','bundle'].map(u => <option key={u}>{u}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm text-gray-600 mb-1 block">Category</label>
+              <select value={form.category} onChange={e => setForm({...form, category: e.target.value})}
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500">
+                {['vegetables','fruits','grains','dairy','spices','poultry','fishery','other'].map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <input type="checkbox" id="available" checked={form.available}
+              onChange={e => setForm({...form, available: e.target.checked})} className="w-4 h-4"/>
+            <label htmlFor="available" className="text-sm text-gray-600">Product is available for sale</label>
+          </div>
+          <button type="submit" disabled={loading}
+            className="bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50">
+            {loading ? 'Saving...' : 'Save changes'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
