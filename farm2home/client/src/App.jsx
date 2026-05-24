@@ -10,6 +10,11 @@ import TransportDashboard from './pages/transport/Dashboard'
 import LicenceUpload from './pages/transport/LicenceUpload'
 import TransportAbout from './pages/transport/About'
 import BuyerDashboard from './pages/buyer/Dashboard'
+import Cart from './pages/buyer/Cart'
+import Checkout from './pages/buyer/Checkout'
+import OrderSuccess from './pages/buyer/OrderSuccess'
+import Orders from './pages/buyer/Orders'
+import BuyerAbout from './pages/buyer/About'
 
 const ProtectedRoute = ({ children, role }) => {
   const { user } = useAuth()
@@ -38,6 +43,11 @@ export default function App() {
 
       {/* Buyer */}
       <Route path="/buyer" element={<ProtectedRoute role="buyer"><BuyerDashboard /></ProtectedRoute>}/>
+      <Route path="/buyer/cart" element={<ProtectedRoute role="buyer"><Cart /></ProtectedRoute>}/>
+      <Route path="/buyer/checkout" element={<ProtectedRoute role="buyer"><Checkout /></ProtectedRoute>}/>
+      <Route path="/buyer/order-success/:id" element={<ProtectedRoute role="buyer"><OrderSuccess /></ProtectedRoute>}/>
+      <Route path="/buyer/orders" element={<ProtectedRoute role="buyer"><Orders /></ProtectedRoute>}/>
+      <Route path="/buyer/about" element={<ProtectedRoute role="buyer"><BuyerAbout /></ProtectedRoute>}/>
     </Routes>
   )
 }

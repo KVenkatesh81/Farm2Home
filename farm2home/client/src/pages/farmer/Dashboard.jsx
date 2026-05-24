@@ -1,5 +1,7 @@
+import React from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
+import api from '../../utils/api'
 
 export default function FarmerDashboard() {
   const { user, logout } = useAuth()
@@ -7,7 +9,6 @@ export default function FarmerDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
         <span className="font-semibold text-green-700 text-lg">🌾 Farm 2 Home</span>
         <div className="flex gap-4 items-center">
@@ -17,7 +18,6 @@ export default function FarmerDashboard() {
           <button onClick={() => { logout(); navigate('/login'); }} className="text-red-500 text-sm">Logout</button>
         </div>
       </nav>
-
       <div className="max-w-5xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">My Listings</h1>
         <p className="text-gray-500 text-sm mb-6">Manage your farm products</p>
@@ -28,7 +28,6 @@ export default function FarmerDashboard() {
 }
 
 function ProductList() {
-  const { token } = useAuth()
   const [products, setProducts] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const navigate = useNavigate()
@@ -39,11 +38,8 @@ function ProductList() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('/api/products/my', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const data = await res.json()
-      setProducts(data)
+      const res = await api.get('/api/products/my')
+      setProducts(res.data)
     } catch (err) {
       console.error(err)
     } finally {
@@ -54,10 +50,7 @@ function ProductList() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this product?')) return
     try {
-      await fetch(`/api/products/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await api.delete(`/api/products/${id}`)
       setProducts(products.filter(p => p._id !== id))
     } catch (err) {
       console.error(err)
@@ -105,6 +98,3 @@ function ProductList() {
     </div>
   )
 }
-
-// need React in scope for hooks
-import React from 'react'

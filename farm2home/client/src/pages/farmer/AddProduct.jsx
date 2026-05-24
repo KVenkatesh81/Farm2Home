@@ -20,7 +20,7 @@ export default function AddProduct() {
     setPreviews(files.map(f => URL.createObjectURL(f)))
   }
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault()
   setLoading(true)
   setError('')
@@ -29,15 +29,32 @@ export default function AddProduct() {
     Object.entries(form).forEach(([k, v]) => formData.append(k, v))
     images.forEach(img => formData.append('images', img))
 
-    await api.post('/api/products', formData)
-    navigate('/farmer')
+    const response = await fetch(
+      'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev/api/products',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData,
+        mode: 'cors',
+        credentials: 'omit'
+      }
+    )
+
+    const data = await response.json()
+    if (data._id) {
+      navigate('/farmer')
+    } else {
+      setError(data.message || 'Failed to add product')
+    }
   } catch (err) {
-    setError(err.response?.data?.message || 'Failed to add product')
+    console.error('ERROR:', err)
+    setError('Failed — ' + err.message)
   } finally {
     setLoading(false)
   }
 }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">

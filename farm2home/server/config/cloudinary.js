@@ -2,13 +2,13 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: 'dxzmbuh2l',
+  api_key: '759577437195125',
+  api_secret: '7r5jm-VEkKJr0zti60pPlWGTifY',
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinary,
   params: {
     folder: 'farm2home',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
