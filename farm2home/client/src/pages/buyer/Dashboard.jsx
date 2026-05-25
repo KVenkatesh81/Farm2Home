@@ -170,7 +170,9 @@ function ProductCard({ product: p }) {
         <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full capitalize">{p.category}</span>
         <h3 className="font-medium text-gray-900 mt-2 mb-1">{p.title}</h3>
         <p className="text-xs text-gray-500 mb-2 line-clamp-2">{p.description}</p>
-        <p className="text-xs text-gray-400 mb-3">by {p.farmerName}</p>
+        <p className="text-xs text-gray-400 mb-3">by {p.farmerName}
+          {p.farmerLocation && <span className="ml-1">· 📍 {p.farmerLocation}</span>}
+        </p>
         <div className="flex justify-between items-center mb-2">
           <span className="text-teal-600 font-semibold">₹{p.price}/{p.unit}</span>
           <button onClick={handleAdd}

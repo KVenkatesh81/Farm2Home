@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import axios from 'axios'
+import api from '../utils/api'
 
 export default function Register() {
-  const [form, setForm] = useState({ name:'', email:'', password:'', role:'buyer', licenceNumber:'' })
+  const [form, setForm] = useState({ name:'', email:'', password:'', role:'buyer', licenceNumber:'', location:'' })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,7 +14,7 @@ export default function Register() {
     setLoading(true)
     setError('')
     try {
-      await axios.post('/api/auth/register', form)
+      await api.post('/api/auth/register', form)
       setSuccess('Registered! Redirecting to login...')
       setTimeout(() => navigate('/login'), 1500)
     } catch (err) {
@@ -39,9 +39,7 @@ export default function Register() {
               <button type="button" key={r}
                 onClick={() => setForm({...form, role: r})}
                 className={`flex-1 py-2 text-sm rounded-lg border capitalize transition-all ${
-                  form.role === r
-                    ? 'bg-green-600 text-white border-green-600'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  form.role === r ? 'bg-green-600 text-white border-green-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                 }`}>
                 {r}
               </button>
@@ -51,12 +49,20 @@ export default function Register() {
           <input type="text" placeholder="Full name" required
             value={form.name} onChange={e => setForm({...form, name: e.target.value})}
             className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+
           <input type="email" placeholder="Email" required
             value={form.email} onChange={e => setForm({...form, email: e.target.value})}
             className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+
           <input type="password" placeholder="Password" required
             value={form.password} onChange={e => setForm({...form, password: e.target.value})}
             className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+
+          {form.role === 'farmer' && (
+            <input type="text" placeholder="Farm location (e.g. Dhanbad, Jharkhand)"
+              value={form.location} onChange={e => setForm({...form, location: e.target.value})}
+              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-green-500"/>
+          )}
 
           {form.role === 'transport' && (
             <input type="text" placeholder="Licence number"

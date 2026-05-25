@@ -18,6 +18,7 @@ const productSchema = new mongoose.Schema({
   images: [{ type: String }],
   farmerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   farmerName: { type: String, required: true },
+  farmerLocation: { type: String, default: '' },
   available: { type: Boolean, default: true },
   embedding: { type: [Number], default: [] },
 }, { timestamps: true });

@@ -16,7 +16,11 @@ const tripSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
-  assignedTransporterName: { type: String, default: '' }
+  assignedTransporterName: { type: String, default: '' },
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', default: null },
+  farmerName: { type: String, default: '' },
+  buyerName: { type: String, default: '' },
+  buyerPhone: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Trip', tripSchema);

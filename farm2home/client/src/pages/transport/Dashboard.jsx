@@ -11,9 +11,7 @@ export default function TransportDashboard() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('available')
 
-  useEffect(() => {
-    fetchTrips()
-  }, [])
+  useEffect(() => { fetchTrips() }, [])
 
   const fetchTrips = async () => {
     try {
@@ -23,19 +21,26 @@ export default function TransportDashboard() {
       ])
       setTrips(available.data)
       setMyTrips(my.data)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) { console.error(err) }
+    finally { setLoading(false) }
   }
 
   const handleAccept = async (id) => {
     try {
-      await api.post(`/api/trips/${id}/accept`)
+      await api.post('/api/trips/' + id + '/accept')
       fetchTrips()
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to accept trip')
+    }
+  }
+
+  const handleComplete = async (id) => {
+    if (!window.confirm('Mark this trip as delivered?')) return
+    try {
+      await api.post('/api/trips/' + id + '/complete')
+      fetchTrips()
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to complete trip')
     }
   }
 
@@ -46,7 +51,7 @@ export default function TransportDashboard() {
         <div className="flex gap-4 items-center">
           <Link to="/transport/about" className="text-gray-600 text-sm hover:text-gray-900">About</Link>
           <span className="text-gray-500 text-sm">{user?.name}</span>
-          <button onClick={() => { logout(); navigate('/login'); }} className="text-red-500 text-sm">Logout</button>
+          <button onClick={() => { logout(); navigate('/login') }} className="text-red-500 text-sm">Logout</button>
         </div>
       </nav>
 
@@ -54,14 +59,11 @@ export default function TransportDashboard() {
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">Transport Dashboard</h1>
         <p className="text-gray-500 text-sm mb-6">Find trips and track your deliveries</p>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-6">
           {['available', 'my'].map(t => (
             <button key={t} onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                tab === t ? 'bg-amber-500 text-white' : 'bg-white border border-gray-200 text-gray-600'
-              }`}>
-              {t === 'available' ? `Available Trips (${trips.length})` : `My Trips (${myTrips.length})`}
+              className={'px-4 py-2 rounded-lg text-sm font-medium transition-all ' + (tab === t ? 'bg-amber-500 text-white' : 'bg-white border border-gray-200 text-gray-600')}>
+              {t === 'available' ? 'Available Trips (' + trips.length + ')' : 'My Trips (' + myTrips.length + ')'}
             </button>
           ))}
         </div>
@@ -69,7 +71,7 @@ export default function TransportDashboard() {
         {loading ? <p className="text-gray-400 text-sm">Loading...</p> : (
           <div className="flex flex-col gap-4">
             {(tab === 'available' ? trips : myTrips).map(trip => (
-              <TripCard key={trip._id} trip={trip} tab={tab} onAccept={handleAccept} />
+              <TripCard key={trip._id} trip={trip} tab={tab} onAccept={handleAccept} onComplete={handleComplete} />
             ))}
             {(tab === 'available' ? trips : myTrips).length === 0 && (
               <div className="text-center py-16">
@@ -91,26 +93,51 @@ function TripCard({ trip, tab, onAccept }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 flex justify-between items-center">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-900">{trip.pickupLocation}</span>
-          <span className="text-gray-400">→</span>
-          <span className="text-sm font-medium text-gray-900">{trip.deliveryLocation}</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[trip.status]}`}>{trip.status}</span>
+    <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-medium text-gray-900">{trip.pickupLocation}</span>
+            <span className="text-gray-400">→</span>
+            <span className="text-sm font-medium text-gray-900">{trip.deliveryLocation}</span>
+            <span className={'text-xs px-2 py-0.5 rounded-full ' + statusColors[trip.status]}>{trip.status}</span>
+          </div>
+          <div className="flex flex-wrap gap-4 text-xs text-gray-500 mt-1">
+            <span>📅 {new Date(trip.date).toLocaleDateString()}</span>
+            <span>⚖️ {trip.weight} kg</span>
+            <span className="text-amber-600 font-semibold text-sm">₹{trip.payment}</span>
+          </div>
         </div>
-        <div className="flex gap-4 text-xs text-gray-500 mt-1">
-          <span>📅 {new Date(trip.date).toLocaleDateString()}</span>
-          <span>⚖️ {trip.weight} kg</span>
-          <span className="text-amber-600 font-semibold text-sm">₹{trip.payment}</span>
+        <div className="flex gap-2 ml-4">
+          {tab === 'available' && (
+            <button onClick={() => onAccept(trip._id)}
+              className="bg-amber-500 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-amber-600">
+              Accept
+            </button>
+          )}
+          {tab === 'my' && trip.status === 'accepted' && (
+            <button onClick={() => onComplete(trip._id)}
+              className="bg-green-500 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-600">
+              Mark Delivered
+            </button>
+          )}
         </div>
       </div>
-      {tab === 'available' && (
-        <button onClick={() => onAccept(trip._id)}
-          className="bg-amber-500 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-amber-600">
-          Accept
-        </button>
-      )}
+
+      <div className="border-t border-gray-100 pt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
+        {trip.farmerName && (
+          <span>🧑‍🌾 Farmer: <span className="text-gray-700 font-medium">{trip.farmerName}</span></span>
+        )}
+        {trip.buyerName && (
+          <span>🛒 Buyer: <span className="text-gray-700 font-medium">{trip.buyerName}</span></span>
+        )}
+        {trip.buyerPhone && tab === 'my' && (
+          <span>📞 Contact: <span className="text-gray-700 font-medium">{trip.buyerPhone}</span></span>
+        )}
+        {trip.orderId && (
+          <span>🧾 Order: <span className="text-gray-700 font-medium">#{trip.orderId.toString().slice(-6).toUpperCase()}</span></span>
+        )}
+      </div>
     </div>
   )
 }

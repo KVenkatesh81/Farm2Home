@@ -100,6 +100,7 @@ router.post('/', authMiddleware, roleMiddleware('farmer'), upload.array('images'
       images,
       farmerId: req.user.id,
       farmerName: req.user.name,
+      farmerLocation: req.user.location || '',
       embedding: [],
     });
     await product.save();
