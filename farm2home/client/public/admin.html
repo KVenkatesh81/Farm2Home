@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Farm 2 Home Admin</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
+  h1 { color: #1a3c1a; margin-bottom: 1.5rem; }
+  h2 { color: #2d6a2d; margin: 1.5rem 0 1rem; font-size: 1.1rem; }
+  .card { background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid #ddd; }
+  input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+  button { padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; }
+  .btn-green { background: #2d6a2d; color: white; }
+  .btn-blue { background: #1a5fa5; color: white; }
+  .btn-red { background: #a32d2d; color: white; }
+  .btn-amber { background: #b57a0f; color: white; }
+  button:hover { opacity: 0.85; }
+  .result { background: #f0f4f0; border-radius: 6px; padding: 1rem; margin-top: 1rem; font-size: 13px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+  .user-card { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .user-name { font-weight: 500; font-size: 14px; }
+  .user-detail { font-size: 12px; color: #666; margin-top: 2px; }
+  .badge-verified { background: #e1f5ee; color: #085041; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .badge-pending { background: #faeeda; color: #633806; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .flex { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<h1>🌾 Farm 2 Home — Admin Panel</h1>
+
+<div class="card">
+  <h2>🔑 Admin Secret</h2>
+  <input type="password" id="secret" placeholder="Enter admin secret" value="farm2home_admin_2024"/>
+  <input type="text" id="backend" placeholder="Backend URL" value=""/>
+  <button class="btn-green" onclick="saveConfig()">Save Config</button>
+  <div id="config-result" class="result" style="display:none"></div>
+</div>
+
+<div class="card">
+  <h2>🪪 Transport Licence Approvals</h2>
+  <button class="btn-blue" onclick="loadTransportUsers()">Load Transport Users</button>
+  <div id="transport-users"></div>
+</div>
+
+<div class="card">
+  <h2>🤖 AI Embeddings</h2>
+  <button class="btn-blue" onclick="checkEmbedStatus()">Check Status</button>
+  <button class="btn-amber" onclick="embedProducts()" style="margin-left:8px">Embed Unembedded Products</button>
+  <div id="embed-result" class="result" style="display:none"></div>
+</div>
+
+<script>
+let BACKEND = localStorage.getItem('admin_backend') || '';
+let SECRET = localStorage.getItem('admin_secret') || 'farm2home_admin_2024';
+
+document.getElementById('secret').value = SECRET;
+document.getElementById('backend').value = BACKEND;
+
+function saveConfig() {
+  BACKEND = document.getElementById('backend').value.replace(/\/$/, '');
+  SECRET = document.getElementById('secret').value;
+  localStorage.setItem('admin_backend', BACKEND);
+  localStorage.setItem('admin_secret', SECRET);
+  const el = document.getElementById('config-result');
+  el.style.display = 'block';
+  el.textContent = 'Saved! Backend: ' + BACKEND;
+}
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'x-admin-secret': SECRET };
+}
+
+async function loadTransportUsers() {
+  const res = await fetch(BACKEND + '/api/admin/transport-users', { headers: headers() });
+  const users = await res.json();
+  const container = document.getElementById('transport-users');
+  if (!Array.isArray(users)) { container.innerHTML = '<div class="result">' + JSON.stringify(users) + '</div>'; return; }
+  container.innerHTML = users.map(u => `
+    <div class="user-card">
+      <div class="flex">
+        <div>
+          <div class="user-name">${u.name}</div>
+          <div class="user-detail">${u.email} · ${u.phone || 'No phone'}</div>
+          <div class="user-detail">Licence: ${u.licenceNumber || 'Not provided'}</div>
+          ${u.licenceUrl ? '<div style="margin-top:6px"><a href="' + u.licenceUrl + '" target="_blank"><img src="' + u.licenceUrl + '" style="width:120px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #ddd;cursor:pointer" title="Click to view full image"/></a></div>' : '<div class="user-detail" style="color:#a32d2d">No licence image uploaded</div>'}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="${u.licenceVerified ? 'badge-verified' : 'badge-pending'}">${u.licenceVerified ? '✓ Verified' : '⏳ Pending'}</span>
+          ${!u.licenceVerified ? `<button class="btn-green" onclick="approveLicence('${u._id}', this)">Approve</button>` : ''}
+          ${u.licenceVerified ? `<button class="btn-red" onclick="rejectLicence('${u._id}', this)">Revoke</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function approveLicence(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Approving...';
+  const res = await fetch(BACKEND + '/api/admin/verify-licence/' + id, { method: 'PATCH', headers: headers() });
+  const data = await res.json();
+  alert(data.message);
+  loadTransportUsers();
+}
+
+async function rejectLicence(id, btn) {
+  if (!confirm('Revoke this licence?')) return;
+  btn.disabled = true;
+  const res = await fetch(BACKEND + '/api/admin/reject-licence/' + id, { method: 'PATCH', headers: headers() });
+  const data = await res.json();
+  alert(data.message);
+  loadTransportUsers();
+}
+
+async function checkEmbedStatus() {
+  const res = await fetch(BACKEND + '/api/admin/embed-status', { headers: headers() });
+  const data = await res.json();
+  const el = document.getElementById('embed-result');
+  el.style.display = 'block';
+  el.textContent = 'Total products: ' + data.total + '\nEmbedded: ' + data.embedded + '\nNot embedded: ' + data.notEmbedded.join(', ');
+}
+
+async function embedProducts() {
+  const res = await fetch(BACKEND + '/api/admin/embed-products', { method: 'POST', headers: headers() });
+  const data = await res.json();
+  const el = document.getElementById('embed-result');
+  el.style.display = 'block';
+  el.textContent = data.message + '\nCheck server logs for progress.';
+}
+</script>
+</body>
+</html>

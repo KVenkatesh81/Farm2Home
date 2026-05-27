@@ -21,6 +21,7 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/trips', require('./routes/trips'));
 app.use('/api/transport', require('./routes/transport'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/admin', require('./routes/admin'));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(function() { console.log('MongoDB connected'); })
