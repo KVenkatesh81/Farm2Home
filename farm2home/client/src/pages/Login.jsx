@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const BACKEND = 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev'
+const BACKEND = 'https://farm2home-ai.onrender.com'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '', role: 'buyer' })

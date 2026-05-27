@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 
-const BACKEND = 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev'
+const BACKEND = 'https://farm2home-ai.onrender.com'
 
 export default function Checkout() {
   const { user } = useAuth()

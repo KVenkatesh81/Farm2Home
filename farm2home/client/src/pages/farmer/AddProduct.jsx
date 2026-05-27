@@ -30,7 +30,7 @@ export default function AddProduct() {
     images.forEach(img => formData.append('images', img))
 
     const response = await fetch(
-      'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev/api/products',
+      'https://farm2home-ai.onrender.com/api/products',
       {
         method: 'POST',
         headers: {
