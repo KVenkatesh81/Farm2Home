@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -6,6 +6,7 @@ import FarmerDashboard from './pages/farmer/Dashboard'
 import AddProduct from './pages/farmer/AddProduct'
 import EditProduct from './pages/farmer/EditProduct'
 import FarmerAbout from './pages/farmer/About'
+import FarmerOrders from './pages/farmer/Orders'
 import TransportDashboard from './pages/transport/Dashboard'
 import LicenceUpload from './pages/transport/LicenceUpload'
 import TransportAbout from './pages/transport/About'
@@ -17,9 +18,16 @@ import Orders from './pages/buyer/Orders'
 import BuyerAbout from './pages/buyer/About'
 
 const ProtectedRoute = ({ children, role }) => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+
   if (!user) return <Navigate to="/login" />
-  if (user.role !== role) return <Navigate to="/login" />
+
+  if (user.role !== role) {
+    // Wrong role — log out and redirect to login
+    logout()
+    return <Navigate to="/login" />
+  }
+
   return children
 }
 
@@ -35,6 +43,7 @@ export default function App() {
       <Route path="/farmer/add" element={<ProtectedRoute role="farmer"><AddProduct /></ProtectedRoute>}/>
       <Route path="/farmer/edit/:id" element={<ProtectedRoute role="farmer"><EditProduct /></ProtectedRoute>}/>
       <Route path="/farmer/about" element={<ProtectedRoute role="farmer"><FarmerAbout /></ProtectedRoute>}/>
+      <Route path="/farmer/orders" element={<ProtectedRoute role="farmer"><FarmerOrders /></ProtectedRoute>}/>
 
       {/* Transport */}
       <Route path="/transport" element={<ProtectedRoute role="transport"><TransportDashboard /></ProtectedRoute>}/>

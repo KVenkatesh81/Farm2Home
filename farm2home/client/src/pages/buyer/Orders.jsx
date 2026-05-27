@@ -2,18 +2,22 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../utils/api'
+import useRefreshOnFocus from '../../hooks/useRefreshOnFocus'
 
 export default function Orders() {
   const { user } = useAuth()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const loadOrders = () => {
     api.get('/api/orders/my')
       .then(res => setOrders(res.data))
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [])
+  }
+
+  useRefreshOnFocus(loadOrders)
+  useEffect(() => { loadOrders() }, [])
 
   const statusColors = {
     placed: 'bg-yellow-100 text-yellow-700',
@@ -43,9 +47,7 @@ export default function Orders() {
           orders.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-gray-400 text-lg mb-4">No orders yet</p>
-              <Link to="/buyer" className="bg-teal-500 text-white px-6 py-2.5 rounded-lg text-sm">
-                Start shopping
-              </Link>
+              <Link to="/buyer" className="bg-teal-500 text-white px-6 py-2.5 rounded-lg text-sm">Start shopping</Link>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -53,18 +55,14 @@ export default function Orders() {
                 <div key={order._id} className="bg-white rounded-xl border border-gray-200 p-5">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">
-                        Order #{order._id.slice(-8).toUpperCase()}
-                      </p>
+                      <p className="font-medium text-gray-900 text-sm">Order #{order._id.slice(-8).toUpperCase()}</p>
                       <p className="text-xs text-gray-500 mt-0.5">
-                        {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                          day: 'numeric', month: 'short', year: 'numeric'
-                        })}
+                        {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[order.deliveryStatus]}`}>
-                        {statusLabels[order.deliveryStatus]}
+                      <span className={'text-xs px-2 py-0.5 rounded-full ' + (statusColors[order.deliveryStatus] || 'bg-gray-100 text-gray-500')}>
+                        {statusLabels[order.deliveryStatus] || order.deliveryStatus}
                       </span>
                       <span className="text-xs text-gray-500">💵 Cash on Delivery</span>
                     </div>
@@ -80,6 +78,9 @@ export default function Orders() {
                         <div className="flex-1">
                           <p className="text-sm text-gray-900">{item.title}</p>
                           <p className="text-xs text-gray-500">{item.quantity} {item.unit} · by {item.farmerName}</p>
+                          {item.farmerPhone && (
+                            <p className="text-xs text-gray-400">📞 Farmer: {item.farmerPhone}</p>
+                          )}
                         </div>
                         <p className="text-sm font-medium text-gray-900">₹{item.price * item.quantity}</p>
                       </div>

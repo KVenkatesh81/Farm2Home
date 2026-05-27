@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     enum: ['farmer', 'transport', 'buyer'],
     required: true
   },
+  phone: { type: String, default: '' },
   location: { type: String, default: '' },
   licenceNumber: { type: String, default: '' },
   licenceUrl: { type: String, default: '' },

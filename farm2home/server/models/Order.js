@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   buyerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   buyerName: { type: String, required: true },
+  buyerPhone: { type: String, default: '' },
   items: [{
     productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
     title: String,
@@ -11,6 +12,9 @@ const orderSchema = new mongoose.Schema({
     unit: String,
     image: String,
     farmerName: String,
+    farmerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    farmerPhone: String,
+    farmerLocation: String,
   }],
   totalAmount: { type: Number, required: true },
   deliveryAddress: { type: String, required: true },

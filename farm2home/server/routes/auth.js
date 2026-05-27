@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, licenceNumber, location } = req.body;
+    const { name, email, password, role, licenceNumber, location, phone } = req.body;
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already registered' });
 
@@ -14,10 +14,10 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = new User({
-      name,
-      email,
+      name, email,
       password: hashedPassword,
       role,
+      phone: phone || '',
       licenceNumber: licenceNumber || '',
       location: location || ''
     });
@@ -35,8 +35,7 @@ router.post('/login', async (req, res) => {
     const { email, password, role } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid email or password' });
-
-    if (user.role !== role) return res.status(400).json({ message: `This account is not a ${role} account` });
+    if (user.role !== role) return res.status(400).json({ message: 'This account is not a ' + role + ' account' });
 
     if (role === 'transport' && !user.licenceVerified) {
       return res.status(403).json({
@@ -50,20 +49,14 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role, name: user.name, location: user.location },
+      { id: user._id, role: user.role, name: user.name, location: user.location, phone: user.phone },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     res.json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        location: user.location
-      }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, location: user.location, phone: user.phone }
     });
   } catch (err) {
     console.error(err);

@@ -2,6 +2,7 @@ import React from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
+import useRefreshOnFocus from '../../hooks/useRefreshOnFocus'
 
 export default function FarmerDashboard() {
   const { user, logout } = useAuth()
@@ -13,9 +14,10 @@ export default function FarmerDashboard() {
         <span className="font-semibold text-green-700 text-lg">🌾 Farm 2 Home</span>
         <div className="flex gap-4 items-center">
           <Link to="/farmer/add" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">+ Add Product</Link>
+          <Link to="/farmer/orders" className="text-gray-600 text-sm hover:text-gray-900">Orders</Link>
           <Link to="/farmer/about" className="text-gray-600 text-sm hover:text-gray-900">About</Link>
           <span className="text-gray-500 text-sm">{user?.name}</span>
-          <button onClick={() => { logout(); navigate('/login'); }} className="text-red-500 text-sm">Logout</button>
+          <button onClick={() => { logout(); navigate('/login') }} className="text-red-500 text-sm">Logout</button>
         </div>
       </nav>
       <div className="max-w-5xl mx-auto px-6 py-8">
@@ -32,11 +34,7 @@ function ProductList() {
   const [loading, setLoading] = React.useState(true)
   const navigate = useNavigate()
 
-  React.useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  const fetchProducts = async () => {
+  const fetchProducts = React.useCallback(async () => {
     try {
       const res = await api.get('/api/products/my')
       setProducts(res.data)
@@ -45,12 +43,18 @@ function ProductList() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useRefreshOnFocus(fetchProducts)
+
+  React.useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this product?')) return
     try {
-      await api.delete(`/api/products/${id}`)
+      await api.delete('/api/products/' + id)
       setProducts(products.filter(p => p._id !== id))
     } catch (err) {
       console.error(err)
@@ -76,14 +80,14 @@ function ProductList() {
           <div className="p-4">
             <div className="flex justify-between items-start mb-1">
               <h3 className="font-medium text-gray-900">{p.title}</h3>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${p.available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+              <span className={'text-xs px-2 py-0.5 rounded-full ' + (p.available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500')}>
                 {p.available ? 'Available' : 'Sold out'}
               </span>
             </div>
             <p className="text-green-600 font-semibold text-sm mb-1">₹{p.price} / {p.unit}</p>
             <p className="text-gray-500 text-xs mb-3">Qty: {p.quantity} · {p.category}</p>
             <div className="flex gap-2">
-              <button onClick={() => navigate(`/farmer/edit/${p._id}`)}
+              <button onClick={() => navigate('/farmer/edit/' + p._id)}
                 className="flex-1 border border-gray-200 text-gray-600 text-xs py-1.5 rounded-lg hover:bg-gray-50">
                 Edit
               </button>

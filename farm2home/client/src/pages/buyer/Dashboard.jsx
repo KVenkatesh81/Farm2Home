@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import api from '../../utils/api'
+import useRefreshOnFocus from '../../hooks/useRefreshOnFocus'
+
+const BACKEND = 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev'
 
 export default function BuyerDashboard() {
   const { user, logout } = useAuth()
@@ -16,27 +19,28 @@ export default function BuyerDashboard() {
   const [category, setCategory] = useState('')
   const [maxPrice, setMaxPrice] = useState(1000)
   const [searchMode, setSearchMode] = useState('normal')
-  const [debounceTimer, setDebounceTimer] = useState(null)
+  const [timer, setTimer] = useState(null)
 
-  useEffect(() => { fetchProducts() }, [])
-
-  useEffect(() => {
-    if (!search) { filterProducts(); setSearchMode('normal'); return }
-    if (debounceTimer) clearTimeout(debounceTimer)
-    const timer = setTimeout(() => { handleAISearch(search) }, 1000)
-    setDebounceTimer(timer)
-  }, [search])
-
-  useEffect(() => { if (!search) filterProducts() }, [category, maxPrice, products])
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const res = await api.get('/api/products')
       setProducts(res.data)
       setFiltered(res.data)
     } catch (err) { console.error(err) }
     finally { setLoading(false) }
-  }
+  }, [])
+
+  useRefreshOnFocus(fetchProducts)
+  useEffect(() => { fetchProducts() }, [fetchProducts])
+
+  useEffect(() => {
+    if (!search) { filterProducts(); setSearchMode('normal'); return }
+    if (timer) clearTimeout(timer)
+    const t = setTimeout(() => handleAISearch(search), 1000)
+    setTimer(t)
+  }, [search])
+
+  useEffect(() => { if (!search) filterProducts() }, [category, maxPrice, products])
 
   const filterProducts = () => {
     let result = [...products]
@@ -49,10 +53,13 @@ export default function BuyerDashboard() {
     if (!query.trim()) return
     setSearchLoading(true)
     try {
-      const res = { data: await (await fetch('https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev/api/products/search?q=' + encodeURIComponent(query), { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })).json() }
-      console.log('AI results:', res.data.length, res.data.map(p => p.title))
-      if (res.data && res.data.length > 0) {
-        setFiltered(res.data)
+      const response = await fetch(
+        BACKEND + '/api/products/search?q=' + encodeURIComponent(query),
+        { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } }
+      )
+      const data = await response.json()
+      if (Array.isArray(data) && data.length > 0) {
+        setFiltered(data)
         setSearchMode('ai')
       } else {
         const basic = products.filter(p =>
@@ -63,7 +70,6 @@ export default function BuyerDashboard() {
         setSearchMode('basic')
       }
     } catch (err) {
-      console.error('Search error:', err.message)
       const basic = products.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
       setFiltered(basic)
       setSearchMode('basic')
@@ -84,7 +90,7 @@ export default function BuyerDashboard() {
           <Link to="/buyer/orders" className="text-gray-600 text-sm">Orders</Link>
           <Link to="/buyer/about" className="text-gray-600 text-sm">About</Link>
           <span className="text-gray-500 text-sm">{user?.name}</span>
-          <button onClick={() => { logout(); navigate('/login'); }} className="text-red-500 text-sm">Logout</button>
+          <button onClick={() => { logout(); navigate('/login') }} className="text-red-500 text-sm">Logout</button>
         </div>
       </nav>
       <div className="max-w-6xl mx-auto px-6 py-8">
@@ -94,7 +100,7 @@ export default function BuyerDashboard() {
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="AI search — try protein food or sweet fruit"
               className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-teal-500 pr-28"/>
-            <div className={'absolute right-3 top-2.5 flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ' + (searchMode === 'ai' ? 'bg-purple-100 text-purple-700' : searchMode === 'basic' ? 'bg-gray-100 text-gray-500' : 'bg-teal-50 text-teal-600')}>
+            <div className={'absolute right-3 top-2.5 text-xs px-2 py-0.5 rounded-full ' + (searchMode === 'ai' ? 'bg-purple-100 text-purple-700' : searchMode === 'basic' ? 'bg-gray-100 text-gray-500' : 'bg-teal-50 text-teal-600')}>
               {searchLoading ? 'searching...' : searchMode === 'ai' ? '✦ AI results' : searchMode === 'basic' ? 'basic search' : '✦ AI search'}
             </div>
           </div>
@@ -112,7 +118,7 @@ export default function BuyerDashboard() {
             <span className="text-sm font-medium text-teal-600">₹{maxPrice}</span>
           </div>
           {(search || category) && (
-            <button onClick={() => { setSearch(''); setCategory(''); setMaxPrice(1000); setSearchMode('normal'); fetchProducts(); }}
+            <button onClick={() => { setSearch(''); setCategory(''); setMaxPrice(1000); setSearchMode('normal'); fetchProducts() }}
               className="text-sm text-red-400 hover:text-red-600">Clear</button>
           )}
         </div>
@@ -128,7 +134,7 @@ export default function BuyerDashboard() {
             {filtered.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-gray-400 text-lg mb-2">No products found</p>
-                <button onClick={() => { setSearch(''); setCategory(''); setMaxPrice(1000); setSearchMode('normal'); fetchProducts(); }}
+                <button onClick={() => { setSearch(''); setCategory(''); setMaxPrice(1000); setSearchMode('normal'); fetchProducts() }}
                   className="text-teal-600 text-sm">Show all products</button>
               </div>
             )}
@@ -170,9 +176,7 @@ function ProductCard({ product: p }) {
         <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full capitalize">{p.category}</span>
         <h3 className="font-medium text-gray-900 mt-2 mb-1">{p.title}</h3>
         <p className="text-xs text-gray-500 mb-2 line-clamp-2">{p.description}</p>
-        <p className="text-xs text-gray-400 mb-3">by {p.farmerName}
-          {p.farmerLocation && <span className="ml-1">· 📍 {p.farmerLocation}</span>}
-        </p>
+        <p className="text-xs text-gray-400 mb-1">by {p.farmerName}{p.farmerLocation && <span className="ml-1">· 📍 {p.farmerLocation}</span>}</p>
         <div className="flex justify-between items-center mb-2">
           <span className="text-teal-600 font-semibold">₹{p.price}/{p.unit}</span>
           <button onClick={handleAdd}
