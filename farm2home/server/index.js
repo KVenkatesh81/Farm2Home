@@ -6,9 +6,11 @@ const app = express();
 
 app.use(function(req, res, next) {
   const origin = req.headers.origin;
-  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  if (!origin || origin.includes('github.dev') || origin.includes('vercel.app') || origin.includes('localhost')) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,x-admin-secret');
   res.setHeader('Access-Control-Allow-Credentials', 'false');
   if (req.method === 'OPTIONS') { res.sendStatus(200); return; }
   next();
@@ -38,7 +40,6 @@ async function start() {
   } catch (err) {
     console.log('Embedding preload failed:', err.message);
   }
-  
   app.listen(PORT, function() {
     console.log('Server running on port ' + PORT);
   });
