@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import api from '../../utils/api'
 
 export default function EditProduct() {
   const { token } = useAuth()
@@ -13,12 +14,20 @@ export default function EditProduct() {
   })
 
   useEffect(() => {
-    fetch(`/api/products/my`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(data => {
-        const p = data.find(p => p._id === id)
-        if (p) setForm({ title: p.title, description: p.description, price: p.price, quantity: p.quantity, unit: p.unit, category: p.category, available: p.available })
+    api.get('/api/products/my')
+      .then(res => {
+        const p = res.data.find(p => p._id === id)
+        if (p) setForm({
+          title: p.title,
+          description: p.description,
+          price: p.price,
+          quantity: p.quantity,
+          unit: p.unit,
+          category: p.category,
+          available: p.available
+        })
       })
+      .catch(err => console.error(err))
   }, [id])
 
   const handleSubmit = async (e) => {
@@ -26,16 +35,10 @@ export default function EditProduct() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(`/api/products/${id}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
+      await api.put('/api/products/' + id, form)
       navigate('/farmer')
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.message || 'Failed to save')
     } finally {
       setLoading(false)
     }
