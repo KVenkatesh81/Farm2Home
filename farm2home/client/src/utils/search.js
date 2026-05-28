@@ -1,4 +1,4 @@
-const BASE_URL = 'https://bug-free-yodel-4j94ww6v69q7c56-5000.app.github.dev';
+const BASE_URL = 'https://farm2home-ai.onrender.com';
 
 export const aiSearch = async (query) => {
   const response = await fetch(
