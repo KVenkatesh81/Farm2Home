@@ -9,7 +9,7 @@ app.use(function(req, res, next) {
   if (!origin || origin.includes('github.dev') || origin.includes('vercel.app') || origin.includes('localhost')) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,x-admin-secret');
   res.setHeader('Access-Control-Allow-Credentials', 'false');
   if (req.method === 'OPTIONS') { res.sendStatus(200); return; }
