@@ -74,7 +74,7 @@ function ProductList() {
       {products.map(p => (
         <div key={p._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           {p.images?.[0]
-            ? <img src={p.images[0]} alt={p.title} className="w-full h-44 object-cover"/>
+            ? <img src={p.images[0]} alt={p.title} className="w-full h-44 object-cover cursor-pointer" onClick={() => window.open(p.images[0], '_blank')}/>
             : <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">No image</div>
           }
           <div className="p-4">
