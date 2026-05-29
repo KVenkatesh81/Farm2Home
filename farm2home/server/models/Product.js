@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema({
   farmerLocation: { type: String, default: '' },
   available: { type: Boolean, default: true },
   embedding: { type: [Number], default: [] },
+  video: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);

@@ -168,9 +168,11 @@ function ProductCard({ product: p }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      {p.images?.[0]
-        ? <img src={p.images[0]} alt={p.title} className="w-full h-44 object-cover cursor-pointer" onClick={() => window.open(p.images[0], '_blank')}/>
-        : <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-3xl">🌾</div>
+      {p.video
+        ? <video src={p.video} className="w-full h-44 object-cover" controls muted playsInline/>
+        : p.images?.[0]
+          ? <img src={p.images[0]} alt={p.title} className="w-full h-44 object-cover cursor-pointer" onClick={() => window.open(p.images[0], '_blank')}/>
+          : <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-3xl">🌾</div>
       }
       <div className="p-4">
         <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full capitalize">{p.category}</span>

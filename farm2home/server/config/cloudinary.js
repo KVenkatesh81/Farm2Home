@@ -9,11 +9,29 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'farm2home',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, height: 600, crop: 'limit' }],
+  params: async (req, file) => {
+    const isVideo = file.mimetype.startsWith('video/');
+    return {
+      folder: 'farm2home',
+      resource_type: isVideo ? 'video' : 'image',
+      allowed_formats: isVideo
+        ? ['mp4', 'mov', 'avi', 'mkv']
+        : ['jpg', 'jpeg', 'png', 'webp'],
+      transformation: isVideo
+        ? [{ width: 720, crop: 'limit' }]
+        : [{ width: 800, height: 600, crop: 'limit' }],
+    };
   },
 });
 
-module.exports = { cloudinary, storage };
+const videoStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'farm2home/videos',
+    resource_type: 'video',
+    allowed_formats: ['mp4', 'mov', 'avi', 'mkv'],
+    transformation: [{ width: 720, crop: 'limit' }],
+  },
+});
+
+module.exports = { cloudinary, storage, videoStorage };

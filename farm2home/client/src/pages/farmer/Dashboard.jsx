@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import useRefreshOnFocus from '../../hooks/useRefreshOnFocus'
+
+const BACKEND = 'https://farm2home-ai.onrender.com'
 
 export default function FarmerDashboard() {
   const { user, logout } = useAuth()
@@ -29,6 +31,51 @@ export default function FarmerDashboard() {
   )
 }
 
+function VideoUpload({ productId, hasVideo, onUploaded }) {
+  const [uploading, setUploading] = useState(false)
+  const [file, setFile] = useState(null)
+
+  const handleUpload = async () => {
+    if (!file) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('video', file)
+      const res = await fetch(BACKEND + '/api/products/' + productId + '/video', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
+        body: formData
+      })
+      const data = await res.json()
+      if (res.ok) { alert('Video uploaded!'); onUploaded(); }
+      else alert(data.message)
+    } catch (err) {
+      alert('Upload failed: ' + err.message)
+    } finally {
+      setUploading(false)
+      setFile(null)
+    }
+  }
+
+  return (
+    <div className="w-full mt-1">
+      {hasVideo
+        ? <span className="text-xs text-green-600">✓ Video added</span>
+        : <div className="flex gap-1 items-center">
+            <input type="file" accept="video/*" onChange={e => setFile(e.target.files[0])}
+              className="text-xs w-28" />
+            {file && (
+              <button onClick={handleUpload} disabled={uploading}
+                className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200 disabled:opacity-50">
+                {uploading ? 'Uploading...' : 'Upload'}
+              </button>
+            )}
+          </div>
+      }
+    </div>
+  )
+}
+
 function ProductList() {
   const [products, setProducts] = React.useState([])
   const [loading, setLoading] = React.useState(true)
@@ -38,27 +85,19 @@ function ProductList() {
     try {
       const res = await api.get('/api/products/my')
       setProducts(res.data)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) { console.error(err) }
+    finally { setLoading(false) }
   }, [])
 
   useRefreshOnFocus(fetchProducts)
-
-  React.useEffect(() => {
-    fetchProducts()
-  }, [fetchProducts])
+  React.useEffect(() => { fetchProducts() }, [fetchProducts])
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this product?')) return
     try {
       await api.delete('/api/products/' + id)
       setProducts(products.filter(p => p._id !== id))
-    } catch (err) {
-      console.error(err)
-    }
+    } catch (err) { console.error(err) }
   }
 
   if (loading) return <p className="text-gray-400 text-sm">Loading...</p>
@@ -96,6 +135,7 @@ function ProductList() {
                 Delete
               </button>
             </div>
+            <VideoUpload productId={p._id} hasVideo={!!p.video} onUploaded={fetchProducts} />
           </div>
         </div>
       ))}

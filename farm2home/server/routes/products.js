@@ -2,7 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const Product = require('../models/Product');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
-const { storage } = require('../config/cloudinary');
+const { storage, videoStorage } = require('../config/cloudinary');
+const multerVideo = require('multer')({ storage: videoStorage });
 const { generateEmbedding } = require('../utils/embeddings');
 
 const router = express.Router();
@@ -140,4 +141,32 @@ router.delete('/:id', authMiddleware, roleMiddleware('farmer'), async (req, res)
   }
 });
 
+// POST upload video for a product
+router.post('/:id/video', authMiddleware, roleMiddleware('farmer'), multerVideo.single('video'), async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.params.id, farmerId: req.user.id });
+
+    product.video = req.file.path;
+    await product.save();
+    res.json({ message: 'Video uploaded', video: req.file.path });
+  } catch (err) {
+    console.error('VIDEO ERROR:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST upload video for a product
+router.post('/:id/video', authMiddleware, roleMiddleware('farmer'), multerVideo.single('video'), async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.params.id, farmerId: req.user.id });
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!req.file) return res.status(400).json({ message: 'No video uploaded' });
+    product.video = req.file.path;
+    await product.save();
+    res.json({ message: 'Video uploaded', video: req.file.path });
+  } catch (err) {
+    console.error('VIDEO ERROR:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;
