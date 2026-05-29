@@ -75,7 +75,7 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <span className="font-semibold text-teal-600 text-lg">🛒 Farm 2 Home</span>
+        <span className="font-semibold text-teal-600 text-lg">🛒 Farm2Home</span>
         <Link to="/buyer/cart" className="text-gray-500 text-sm">← Back to cart</Link>
       </nav>
 

@@ -13,7 +13,7 @@ export default function FarmerDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <span className="font-semibold text-green-700 text-lg">🌾 Farm 2 Home</span>
+        <span className="font-semibold text-green-700 text-lg">🌾 Farm2Home</span>
         <div className="flex gap-4 items-center">
           <Link to="/farmer/add" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">+ Add Product</Link>
           <Link to="/farmer/orders" className="text-gray-600 text-sm hover:text-gray-900">Orders</Link>

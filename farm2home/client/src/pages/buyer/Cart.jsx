@@ -11,7 +11,7 @@ export default function Cart() {
     return (
       <div className="min-h-screen bg-gray-50">
         <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <span className="font-semibold text-teal-600 text-lg">🛒 Farm 2 Home</span>
+          <span className="font-semibold text-teal-600 text-lg">🛒 Farm2Home</span>
           <Link to="/buyer" className="text-gray-500 text-sm">← Back to products</Link>
         </nav>
         <div className="flex flex-col items-center justify-center py-24">

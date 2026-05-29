@@ -28,7 +28,7 @@ export default function Register() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-xl border border-gray-200 w-full max-w-md">
         <h1 className="text-2xl font-medium text-gray-900 mb-2">Create account</h1>
-        <p className="text-gray-500 text-sm mb-6">Join Farm 2 Home</p>
+        <p className="text-gray-500 text-sm mb-6">Join Farm2Home</p>
         {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">{error}</div>}
         {success && <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-lg mb-4">{success}</div>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

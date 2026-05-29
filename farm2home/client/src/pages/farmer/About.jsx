@@ -6,7 +6,7 @@ export default function FarmerAbout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <span className="font-semibold text-green-700 text-lg">🌾 Farm 2 Home</span>
+        <span className="font-semibold text-green-700 text-lg">🌾 Farm2Home</span>
         <Link to="/farmer" className="text-gray-500 text-sm">← Dashboard</Link>
       </nav>
       <div className="max-w-2xl mx-auto px-6 py-10">

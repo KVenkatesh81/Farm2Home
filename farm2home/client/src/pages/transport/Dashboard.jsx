@@ -57,7 +57,7 @@ export default function TransportDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <span className="font-semibold text-amber-600 text-lg">🚚 Farm 2 Home</span>
+        <span className="font-semibold text-amber-600 text-lg">🚚 Farm2Home</span>
         <div className="flex gap-4 items-center">
           <Link to="/transport/about" className="text-gray-600 text-sm">About</Link>
           <span className="text-gray-500 text-sm">{user?.name}</span>

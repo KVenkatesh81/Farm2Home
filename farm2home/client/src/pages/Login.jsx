@@ -41,7 +41,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-xl border border-gray-200 w-full max-w-md">
-        <h1 className="text-2xl font-medium text-gray-900 mb-2">Farm 2 Home</h1>
+        <h1 className="text-2xl font-medium text-gray-900 mb-2">Farm2Home</h1>
         <p className="text-gray-500 text-sm mb-6">Sign in to your account</p>
 
         {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">{error}</div>}
