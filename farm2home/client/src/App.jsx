@@ -1,7 +1,8 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import PendingVerification from './pages/PendingVerification'
 import FarmerDashboard from './pages/farmer/Dashboard'
 import AddProduct from './pages/farmer/AddProduct'
 import EditProduct from './pages/farmer/EditProduct'
@@ -16,19 +17,26 @@ import Checkout from './pages/buyer/Checkout'
 import OrderSuccess from './pages/buyer/OrderSuccess'
 import Orders from './pages/buyer/Orders'
 import BuyerAbout from './pages/buyer/About'
+import AdminDashboard from './pages/admin/AdminDashboard'
 
 const ProtectedRoute = ({ children, role }) => {
-  const { user, logout } = useAuth()
-
+  const { user } = useAuth()
   if (!user) return <Navigate to="/login" />
-
-  if (user.role !== role) {
-    // Wrong role — log out and redirect to login
-    logout()
-    return <Navigate to="/login" />
-  }
-
+  if (role && !user.isAdmin && user.role !== role) return <Navigate to="/login" />
   return children
+}
+
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth()
+  if (!user) return <Navigate to="/login" />
+  if (!user.isAdmin) return <Navigate to="/login" />
+  return children
+}
+
+function PendingPage() {
+  const location = useLocation()
+  const state = location.state || {}
+  return <PendingVerification status={state.status} reason={state.reason} />
 }
 
 export default function App() {
@@ -37,6 +45,10 @@ export default function App() {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/pending-verification" element={<PendingPage />} />
+
+      {/* Admin */}
+      <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
       {/* Farmer */}
       <Route path="/farmer" element={<ProtectedRoute role="farmer"><FarmerDashboard /></ProtectedRoute>}/>

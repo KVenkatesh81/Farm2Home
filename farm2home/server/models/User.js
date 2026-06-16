@@ -13,7 +13,15 @@ const userSchema = new mongoose.Schema({
   location: { type: String, default: '' },
   licenceNumber: { type: String, default: '' },
   licenceUrl: { type: String, default: '' },
-  licenceVerified: { type: Boolean, default: false }
+  licenceVerified: { type: Boolean, default: false },
+  isVerified: { type: Boolean, default: false },
+  isAdmin: { type: Boolean, default: false },
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'verified', 'rejected'],
+    default: 'pending'
+  },
+  rejectionReason: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

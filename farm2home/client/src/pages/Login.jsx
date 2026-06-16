@@ -24,13 +24,25 @@ export default function Login() {
       const data = await res.json()
 
       if (!res.ok) {
+        if (data.status === 'pending') {
+          navigate('/pending-verification')
+          return
+        }
+        if (data.status === 'rejected') {
+          navigate('/pending-verification', { state: { status: 'rejected', reason: data.reason } })
+          return
+        }
         if (data.needsLicence) { navigate('/transport/licence'); return }
-        if (data.pendingVerification) { setError('Your licence is under review. Please wait for verification.'); return }
+        if (data.pendingVerification) {
+          setError('Your licence is under review. Please wait for verification.')
+          return
+        }
         throw new Error(data.message || 'Login failed')
       }
 
       login(data.user, data.token)
-      navigate('/' + data.user.role)
+      if (data.user.isAdmin) navigate('/admin')
+      else navigate('/' + data.user.role)
     } catch (err) {
       setError(err.message || 'Login failed')
     } finally {
@@ -41,7 +53,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-xl border border-gray-200 w-full max-w-md">
-        <h1 className="text-2xl font-medium text-gray-900 mb-2">Farm2Home</h1>
+        <h1 className="text-2xl font-medium text-gray-900 mb-2">Farm 2 Home</h1>
         <p className="text-gray-500 text-sm mb-6">Sign in to your account</p>
 
         {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">{error}</div>}
@@ -69,7 +81,6 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-
         <p className="text-sm text-gray-500 mt-4 text-center">
           No account? <Link to="/register" className="text-green-600">Register</Link>
         </p>
