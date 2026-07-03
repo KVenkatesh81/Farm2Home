@@ -1,6 +1,6 @@
 # Farm 2 Home 🌾
 
-[Made with MERN     AI Powered      Deployed on Vercel     Deployed on Render]
+
 
 A full-stack web marketplace that connects farmers directly with buyers — no middlemen, no cold storage delays. Transporters handle deliveries, farmers set their own prices, and buyers get fresh produce at better rates.
 
@@ -26,8 +26,7 @@ There are three types of users on this platform:
 - **Farmers** post their products with images, set their price, and see incoming orders from buyers. They know exactly who bought what and where it needs to go.
 - **Buyers** browse all available farm products, search using AI (type "protein food" and it'll find eggs and milk even if those words aren't in the title), add to cart, and place orders with cash on delivery.
 - **Transporters** see available delivery trips auto-generated from buyer orders. Each trip shows the pickup location (farmer's farm), delivery address (buyer's home), weight, and how much they'll earn. They accept trips and mark them delivered when done.
-
-> 📸 *Add a side-by-side screenshot of all 3 dashboards here (Farmer / Transport / Buyer)*
+<!-- 📸 *Add a side-by-side screenshot of all 3 dashboards here (Farmer / Transport / Buyer)* -->
 
 ---
 
@@ -61,7 +60,7 @@ There are three types of users on this platform:
 - Manage AI embeddings — trigger embedding generation for new products
 - See platform-wide stats: total users, pending approvals, products, orders, trips
 
-> 📸 *Add a screenshot of the Admin Panel here*
+<!-- 📸 *Add a screenshot of the Admin Panel here* -->
 
 ---
 
@@ -71,7 +70,7 @@ This was the most interesting part to build. Instead of matching keywords exactl
 
 In practice: searching "morning drink" returns milk. Searching "protein food" returns eggs. The text doesn't need to match — the meaning does.
 
-> 📸 *Add a screenshot showing the AI search badge (✦ AI results) with example results*
+<!--📸 *Add a screenshot showing the AI search badge (✦ AI results) with example results*-->
 
 ---
 
@@ -194,7 +193,7 @@ Register as a farmer, buyer, or transporter. All accounts need admin approval be
 
 ---
 
-## Screenshots
+<!-- ## Screenshots
 
 > 📸 **Login Page** — *(Add screenshot here)*
 
@@ -206,7 +205,7 @@ Register as a farmer, buyer, or transporter. All accounts need admin approval be
 
 > 📸 **Admin Panel — pending users list** — *(Add screenshot here)*
 
-> 📸 **Order Success Page** — *(Add screenshot here)*
+> 📸 **Order Success Page** — *(Add screenshot here)* -->
 
 ---
 
