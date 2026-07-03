@@ -9,7 +9,7 @@ Built during a 15-day sprint to learn the MERN stack hands-on. Every feature you
 **Live demo:** [farm2home-six.vercel.app](https://farm2home-six.vercel.app)
 **Backend:** [farm2home-ai.onrender.com](https://farm2home-ai.onrender.com)
 
-> 📸 *Add a banner screenshot of the landing/login page here*
+<!-- 📸 *Add a banner screenshot of the landing/login page here* -->
 
 ---
 
