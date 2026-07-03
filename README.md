@@ -1,9 +1,6 @@
 # Farm 2 Home 🌾
 
-[Made with MERN]
-[AI Powered]
-[Deployed on Vercel]
-[Deployed on Render]
+[Made with MERN     AI Powered      Deployed on Vercel     Deployed on Render]
 
 A full-stack web marketplace that connects farmers directly with buyers — no middlemen, no cold storage delays. Transporters handle deliveries, farmers set their own prices, and buyers get fresh produce at better rates.
 
