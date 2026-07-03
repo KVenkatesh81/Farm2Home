@@ -1,9 +1,9 @@
 # Farm 2 Home 🌾
 
-[Made with MERN](https://img.shields.io/badge/Stack-MERN-green?style=flat)
-[AI Powered](https://img.shields.io/badge/AI-Hugging%20Face%20Embeddings-yellow?style=flat)
-[Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat&logo=vercel)
-[Deployed on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render)
+[Made with MERN]
+[AI Powered]
+[Deployed on Vercel]
+[Deployed on Render]
 
 A full-stack web marketplace that connects farmers directly with buyers — no middlemen, no cold storage delays. Transporters handle deliveries, farmers set their own prices, and buyers get fresh produce at better rates.
 
