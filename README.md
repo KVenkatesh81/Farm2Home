@@ -1,9 +1,9 @@
 # Farm 2 Home 🌾
 
-![Made with MERN](https://img.shields.io/badge/Stack-MERN-green?style=flat)
-![AI Powered](https://img.shields.io/badge/AI-Hugging%20Face%20Embeddings-yellow?style=flat)
-![Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat&logo=vercel)
-![Deployed on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render)
+[Made with MERN](https://img.shields.io/badge/Stack-MERN-green?style=flat)
+[AI Powered](https://img.shields.io/badge/AI-Hugging%20Face%20Embeddings-yellow?style=flat)
+[Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat&logo=vercel)
+[Deployed on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render)
 
 A full-stack web marketplace that connects farmers directly with buyers — no middlemen, no cold storage delays. Transporters handle deliveries, farmers set their own prices, and buyers get fresh produce at better rates.
 
@@ -238,8 +238,8 @@ Starting from only HTML/CSS/JS knowledge and building a full-stack deployed appl
 **K Venkatesh**
 B.Tech Electronics and Communication Engineering — IIT (ISM) Dhanbad
 
-[![GitHub](https://img.shields.io/badge/GitHub-KVenkatesh81-181717?style=flat&logo=github)](https://github.com/KVenkatesh81)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-kvenkatesh-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/kvenkatesh)
+[GitHub](https://github.com/KVenkatesh81) · [LinkedIn](https://www.linkedin.com/in/venkatesh-k-a03b71317/)
+
 
 ---
 
